@@ -1,0 +1,117 @@
+{
+  "version": "v1",
+  "config": {
+    "visState": {
+      "filters": [],
+      "layers": [
+        {
+          "id": "ao87uqe",
+          "type": "geojson",
+          "config": {
+            "dataId": "my_data",
+            "label": "moz_admin_combined",
+            "color": [
+              119,
+              110,
+              87,
+              255
+            ],
+            "columns": {
+              "geojson": "geometry"
+            },
+            "isVisible": true,
+            "visConfig": {
+              "opacity": 0.8,
+              "thickness": 2,
+              "colorRange": {
+                "name": "Global Warming",
+                "type": "sequential",
+                "category": "Uber",
+                "colors": [
+                  "#5A1846",
+                  "#900C3F",
+                  "#C70039",
+                  "#E3611C",
+                  "#F1920E",
+                  "#FFC300"
+                ]
+              },
+              "radius": 10,
+              "sizeRange": [
+                0,
+                10
+              ],
+              "radiusRange": [
+                0,
+                50
+              ],
+              "heightRange": [
+                0,
+                500
+              ],
+              "elevationScale": 5,
+              "hi-precision": false,
+              "stroked": true,
+              "filled": true,
+              "enable3d": false,
+              "wireframe": false
+            }
+          },
+          "visualChannels": {
+            "colorField": {
+              "name": "population_density",
+              "type": "real"
+            },
+            "colorScale": "quantile",
+            "sizeField": null,
+            "sizeScale": "linear",
+            "heightField": null,
+            "heightScale": "linear",
+            "radiusField": null,
+            "radiusScale": "linear"
+          }
+        }
+      ],
+      "interactionConfig": {
+        "tooltip": {
+          "fieldsToShow": {
+            "cupp6r9fm": [
+              "gubid",
+              "population",
+              "population_density"
+            ]
+          },
+          "enabled": true
+        },
+        "brush": {
+          "size": 0.5,
+          "enabled": false
+        }
+      },
+      "layerBlending": "normal",
+      "splitMaps": []
+    },
+    "mapState": {
+      "bearing": 0,
+      "dragRotate": false,
+      "latitude": -18.898797361796323,
+      "longitude": 34.759301185750765,
+      "pitch": 0,
+      "zoom": 5,
+      "isSplit": false
+    },
+    "mapStyle": {
+      "styleType": "dark",
+      "topLayerGroups": {},
+      "visibleLayerGroups": {
+        "label": true,
+        "road": true,
+        "border": false,
+        "building": true,
+        "water": true,
+        "land": true
+      },
+      "mapStyles": {}
+    }
+  }
+}

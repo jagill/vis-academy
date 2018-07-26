@@ -22,52 +22,93 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import KeplerGl from 'kepler.gl';
-
+// Kepler.gl Schema APIs
+import KeplerGlSchema from 'kepler.gl/schemas';
 // Kepler.gl actions
 import {addDataToMap} from 'kepler.gl/actions';
 // Kepler.gl Data processing APIs
 import Processors from 'kepler.gl/processors';
-// Sample data
-import nycTrips from './data/nyc-trips.csv';
 
-// Kepler.gl Schema APIs
-import KeplerGlSchema from 'kepler.gl/schemas';
-
-// Component and helpers
 import Button from './button';
 import downloadJsonFile from "./file-download";
+
+import polygonCsvConfig from './data/polygon_csv_config.json';
+import pointCsvConfig from './data/point_csv_config.json';
+
 
 const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
 
 class App extends Component {
   componentDidMount() {
-    // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
-    const data = Processors.processCsvData(nycTrips);
-    // Create dataset structure
-    const dataset = {
-      data,
+    console.log('url: ', this.getQueryParam('everstoreurl'));
+    let data_url = this.getQueryParam('everstoreurl');
+    fetch(data_url).then((response) => {
+        console.log('Got response');
+        return response.text();
+        //return response.json();
+      }).catch((error) => {
+        console.error("Fetch Error =", error);
+      }).then((response_data) => {
+        console.log('Got json');
+        try {
+          //const data = Processors.processGeojson(response_data);
+          const data = Processors.processCsvData(response_data);
+          const dataset = {
+            data,
+            info: {
+              // `info` property are optional, adding an `id` associate with this dataset makes it easier
+              // to replace it later
+              id: 'my_data'
+            }
+          };
 
-      info: {
-        // `info` property are optional, adding an `id` associate with this dataset makes it easier
-        // to replace it later
-        id: 'my_data'
-      }
-    };
-    // addDataToMap action to inject dataset into kepler.gl instance
-    this.props.dispatch(addDataToMap({datasets: dataset}));
+          const config = this.getMapConfig();
+
+          // Create dataset structure
+          // addDataToMap action to inject dataset into kepler.gl instance
+          console.log('data: ', data);
+          this.props.dispatch(addDataToMap({datasets: dataset, config}));
+        } catch (error) {
+          console.error('Process data error: ', error);
+        }
+      });
+
   }
+
+  getQueryParam(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
+  getMapConfig() {
+    console.log('getMapConfig()!!!!');
+    const style = this.getQueryParam('style')
+    if (style === 'polygon') {
+      return polygonCsvConfig;
+    } else if (style === 'point') {
+      return pointCsvConfig;
+    } else {
+      return '';
+    }
+  }
+
 
   // This method is used as reference to show how to export the current kepler.gl instance configuration
   // Once exported the configuration can be imported using parseSavedConfig or load method from KeplerGlSchema
-  getMapConfig() {
-    // retrieve kepler.gl store
-    const {keplerGl} = this.props;
-    // retrieve current kepler.gl instance store
-    const {map} = keplerGl;
+  // getMapConfig() {
+  //   // retrieve kepler.gl store
+  //   const {keplerGl} = this.props;
+  //   // retrieve current kepler.gl instance store
+  //   const {map} = keplerGl;
 
-    // create the config object
-    return KeplerGlSchema.getConfigToSave(map);
-  }
+  //   // create the config object
+  //   return KeplerGlSchema.getConfigToSave(map);
+  // }
 
   // This method is used as reference to show how to export the current kepler.gl instance configuration
   // Once exported the configuration can be imported using parseSavedConfig or load method from KeplerGlSchema
@@ -80,8 +121,7 @@ class App extends Component {
 
   render() {
     return (
-      <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
-        <Button onClick={this.exportMapConfig}>Export Config</Button>
+      <div style={{position: 'absolute', width: '100%', height: '100%'}}>
         <AutoSizer>
           {({height, width}) => (
             <KeplerGl
